@@ -10,7 +10,7 @@ public class BlueLeftVisionPark {
     // testing if git is working now???
     private RobotMain robot;
     private DriveTrain driveTrain;
-    private ScoringMechanism scoringMechanism;
+    private ScoringMechanism scoringMechanismmm;
     private ElapsedTime timer = new ElapsedTime();
 
 }
