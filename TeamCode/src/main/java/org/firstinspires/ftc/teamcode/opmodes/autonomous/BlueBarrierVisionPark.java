@@ -64,7 +64,7 @@ public class BlueBarrierVisionPark extends LinearOpMode {
 
         // code to run repeatedly after 'init' is pressed but before 'start' is pressed
         while (!isStarted()){
-            duckPos = robot.ducktector.getDuckPosition();
+   //         duckPos = robot.ducktector.getDuckPosition();
             telemetry.addData("Duck Position", duckPos);
             telemetry.update();
         }

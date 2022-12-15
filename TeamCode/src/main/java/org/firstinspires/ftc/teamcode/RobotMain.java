@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.OpenCV.ConeTagDetector;
 import org.firstinspires.ftc.teamcode.libs.drive.Pose2d;
 import org.firstinspires.ftc.teamcode.libs.vision.Ducktector;
 import org.firstinspires.ftc.teamcode.subsystems.*;
@@ -58,9 +60,10 @@ public class RobotMain {
     public String allianceColor;
 
     //Declare vision members
-    public Ducktector ducktector;
-    public static char duckPosition;
+    public ConeTagDetector coneTagDetector;
+    public static int parkPos;
 
+    Telemetry telemetry;
     //Declare misc objects
     private ElapsedTime timer;
     public static boolean godtonomous;
@@ -70,6 +73,16 @@ public class RobotMain {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.allianceColor = allianceColor.toLowerCase();
+        robotInit(godtonomous);
+    }
+
+    public RobotMain(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, String allianceColor,
+                     boolean godtonomous, Telemetry telemetry) {
+        this.hardwareMap = hardwareMap;
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        this.allianceColor = allianceColor.toLowerCase();
+        this.telemetry = telemetry;
         robotInit(godtonomous);
     }
 
@@ -95,13 +108,13 @@ public class RobotMain {
         //Init vision
         if (godtonomous) {
             //Init vision
-            ducktector = new Ducktector(hardwareMap);
+            coneTagDetector = new ConeTagDetector(hardwareMap);
             
             //Detect for five seconds to get an accurate reading
             timer = new ElapsedTime();
             timer.reset();
             while (timer.seconds() < 3) {
-                duckPosition = ducktector.getDuckPosition();
+                parkPos = coneTagDetector.getTagNumber(telemetry);
             }
 
             //Shut the camera off before init is complete for power conservation

@@ -79,11 +79,13 @@ public class ScoringMechanism extends Subsystem {
         } else if (RobotMain.gamepad2.dpad_down) {
             slide.setPower(0.2);
         } else if (RobotMain.gamepad2.b) { //close
-            basket.setPosition(1);
-            capping.setPosition(0);
+         //   basket.setPosition(1);
+           // capping.setPosition(0);
+            closeGripper();
         } else if (RobotMain.gamepad2.x) { //open
-            basket.setPosition(0.4);
-            capping.setPosition(0.15);
+          //  basket.setPosition(0.4);
+           // capping.setPosition(0.15);
+            openGripper();
         } else if (RobotMain.gamepad2.x) {
             capping.setPosition(0.5);
         } else if (RobotMain.gamepad2.b) {
@@ -94,22 +96,7 @@ public class ScoringMechanism extends Subsystem {
          else {
             slide.setPower(0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            //   intake.setPower(0);
+    //   intake.setPower(0);
 //            duckArm.setPower(0);
            // basket.setPosition(1);
             //capping.setPosition(0);
@@ -121,8 +108,8 @@ public class ScoringMechanism extends Subsystem {
     @Override
     public void stop() {
         slide.setPower(0);
-        intake.setPower(0);
-        duckArm.setPower(0);
+      //  intake.setPower(0);
+      //  duckArm.setPower(0);
     }
 
     public void slideByTicks(double power, double ticks) {
@@ -138,6 +125,14 @@ public class ScoringMechanism extends Subsystem {
             //more likely to reach its position more consistently
         }
         slide.setPower(0);
+    }
+    public void closeGripper() {
+        basket.setPosition(1); //1
+        capping.setPosition (0); //0
+    }
+    public void openGripper() {
+        basket.setPosition(0.4);
+        capping.setPosition(0.15);
     }
 
     public void cappingMotion(double power) {
