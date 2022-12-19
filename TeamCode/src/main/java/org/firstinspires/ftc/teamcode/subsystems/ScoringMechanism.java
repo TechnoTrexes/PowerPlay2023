@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotMain;
@@ -60,10 +61,10 @@ public class ScoringMechanism extends Subsystem {
     }
 
     @Override
-    public void loop() {
+    public void loop(Telemetry telemetry) {
         double d= 0;
         d= distance.getDistance(DistanceUnit.MM);
-       // telemetry.addData("distance= ", d);
+       telemetry.addData("distance= ", d);
 
      //   telemetry.addData("Red", color.red());
         //telemetry.addData("Green", color.green());
@@ -75,9 +76,9 @@ public class ScoringMechanism extends Subsystem {
         //telemetry.update();
         int pos = slide.getCurrentPosition();
         if (RobotMain.gamepad2.dpad_up) {
-            slide.setPower(-0.2);
+            slide.setPower(-0.5);
         } else if (RobotMain.gamepad2.dpad_down) {
-            slide.setPower(0.2);
+            slide.setPower(0.5);
         } else if (RobotMain.gamepad2.b) { //close
          //   basket.setPosition(1);
            // capping.setPosition(0);

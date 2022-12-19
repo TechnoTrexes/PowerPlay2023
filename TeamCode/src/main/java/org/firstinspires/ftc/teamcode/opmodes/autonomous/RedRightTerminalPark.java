@@ -16,7 +16,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -35,9 +34,9 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
  * Remove a @Disabled the on the next line or two (if present) to add this opmode to the Driver Station OpMode list,
  * or add a @Disabled annotation to prevent this OpMode from being added to the Driver Station
  */
-@Autonomous(name="BlueLeftSubPark", group="Linear Opmode")
+@Autonomous(name="RedRightTerminalPark", group="Linear Opmode")
 
-public class BlueLeftSubPark extends LinearOpMode {
+public class RedRightTerminalPark extends LinearOpMode {
 
     private RobotMain robot;
     private DriveTrain driveTrain;

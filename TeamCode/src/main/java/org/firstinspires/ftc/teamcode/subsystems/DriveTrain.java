@@ -99,7 +99,7 @@ public class DriveTrain extends Subsystem {
     }
 
     @Override
-    public void loop() {
+    public void loop(Telemetry telemetry) {
         double thrust = RobotMain.gamepad1.left_stick_y; //originally negative
         double strafe = -RobotMain.gamepad1.left_stick_x; //originally positive
         double turn = -RobotMain.gamepad1.right_stick_x; //originally positive

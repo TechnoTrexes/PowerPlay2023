@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.subsystems.ScoringMechanism;
 
 
-@Autonomous(name="BlueVisionConePark", group="Linear Opmode")
+@Autonomous(name="RedRightVisionConePark", group="Linear Opmode")
 
 public class RedRightVisionConePark extends LinearOpMode {
 
@@ -41,7 +42,7 @@ public class RedRightVisionConePark extends LinearOpMode {
             driveTrain.driveDistance(0.8, 74, 0, false); // 24
             driveTrain.rotateDegrees(0.8,-90);
             scoringMechanism.slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            scoringMechanism.slideByTicks(0.2, 4200); //4300
+            scoringMechanism.slideByTicks(0.2, -4200); //4300
             scoringMechanism.slide.setPower(0);
             driveTrain.driveDistance(0.2, 4, 270, false); // 13
             scoringMechanism.openGripper();

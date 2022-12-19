@@ -21,6 +21,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotMain;
 import org.firstinspires.ftc.teamcode.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.subsystems.ScoringMechanism;
@@ -55,12 +56,13 @@ public class TeleopMain extends OpMode {
     @Override
     public void start() {
         telemetry.addData("GO GO GO GO GO GO (AS)", "You pressed play early didn't you (@vid_dude)?");
+
     }
 
     @Override
     public void loop() {
         for (Subsystem subsystem : RobotMain.allSubsystems) {
-            subsystem.loop();
+            subsystem.loop(telemetry);
         }
     }
 
