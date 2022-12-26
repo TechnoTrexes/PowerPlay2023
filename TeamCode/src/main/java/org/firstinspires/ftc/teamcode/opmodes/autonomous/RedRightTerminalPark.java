@@ -43,10 +43,11 @@ public class RedRightTerminalPark extends LinearOpMode {
     private ScoringMechanism scoringMechanism;
 
     private ElapsedTime timer = new ElapsedTime();
+    private int parkPos;
 
     @Override
     public void runOpMode() {
-        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true);
+        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true, telemetry);
         driveTrain = (DriveTrain) RobotMain.driveTrain;
         scoringMechanism = (ScoringMechanism) RobotMain.scoringMechanism;
         timer.reset();
@@ -54,11 +55,15 @@ public class RedRightTerminalPark extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        waitForStart();
+        while (!isStarted()) {
+            parkPos = robot.coneTagDetector.getTagNumber(telemetry);
+            sleep(20);
+        }
 
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
-            driveTrain.driveDistance(0.5, 35, 90, false);
+            driveTrain.driveDistance(0.5, 1, 0, false);
+            driveTrain.driveDistance(0.5, 25, 270, false);
         }
     }
 }

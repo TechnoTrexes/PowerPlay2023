@@ -47,7 +47,7 @@ public class RedRightSubPark extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true);
+        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true, telemetry);
         driveTrain = (DriveTrain) RobotMain.driveTrain;
         scoringMechanism = (ScoringMechanism) RobotMain.scoringMechanism;
         timer.reset();
@@ -59,7 +59,8 @@ public class RedRightSubPark extends LinearOpMode {
 
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
-            driveTrain.driveDistance(0.5, 35, 270, false);
+            driveTrain.driveDistance(0.5,1,0,false);
+            driveTrain.driveDistance(0.5, 25, 90, false);
         }
     }
 }

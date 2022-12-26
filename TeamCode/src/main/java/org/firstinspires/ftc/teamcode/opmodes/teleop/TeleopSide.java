@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -48,12 +49,15 @@ public class TeleopSide extends OpMode {
     private RobotMain robot;
     private DriveTrain driveTrain;
     private ScoringMechanism scoringMechanism;
+    private DigitalChannel digitalTouch;  // Hardware Device Object
+
 
     @Override
     public void init() {
-        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true);
+        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true, telemetry);
         driveTrain = (DriveTrain) RobotMain.driveTrain;
         scoringMechanism = (ScoringMechanism) RobotMain.scoringMechanism;
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "touchSensor");
 
         scoringMechanism.slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         scoringMechanism.slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -82,6 +86,12 @@ public class TeleopSide extends OpMode {
         double d= 0;
         d= scoringMechanism.distance.getDistance(DistanceUnit.MM);
         telemetry.addData("distance= ", d);
+        if (digitalTouch.getState() == true) {
+            telemetry.addData("Digital Touch", "Is Not Pressed");
+        } else {
+            telemetry.addData("Digital Touch", "Is Pressed");
+        }
+
 
    //     telemetry.addData("Red", scoringMechanism.color.red());
    //     telemetry.addData("Green", scoringMechanism.color.green());

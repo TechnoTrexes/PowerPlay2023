@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.robot.Robot;
@@ -24,7 +25,9 @@ public class ScoringMechanism extends Subsystem {
     public DcMotor duckArm;
     public Servo capping;
     public DistanceSensor distance;
-  //  public ColorSensor color;
+    public DigitalChannel digitalTouch;  // Hardware Device Object
+
+    //  public ColorSensor color;
    // public CRServo capping;
 
     private final double intakePower = 1;
@@ -49,6 +52,7 @@ public class ScoringMechanism extends Subsystem {
        // capping = hardwareMap.get(CRServo.class, "capping");
         distance = hardwareMap.get(DistanceSensor.class,"distance");
        // color = hardwareMap.get(ColorSensor.class, "color");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "touchSensor");
 
         //Set motors to break
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -76,9 +80,18 @@ public class ScoringMechanism extends Subsystem {
         //telemetry.update();
         int pos = slide.getCurrentPosition();
         if (RobotMain.gamepad2.dpad_up) {
-            slide.setPower(-0.5);
+            if (d > 750) {
+                slide.setPower(-0.25);
+            } else {
+                slide.setPower(-0.5);
+            }
         } else if (RobotMain.gamepad2.dpad_down) {
-            slide.setPower(0.5);
+            if (digitalTouch.getState() == true) {
+                slide.setPower(0.5);
+            } else {
+                slide.setPower(0);
+            }
+
         } else if (RobotMain.gamepad2.b) { //close
          //   basket.setPosition(1);
            // capping.setPosition(0);

@@ -38,8 +38,8 @@ public class RedLeftVisionConePark extends LinearOpMode {
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
             scoringMechanism.closeGripper();
-            driveTrain.driveDistance(0.8, 24, 90, false); // was 4
-            driveTrain.driveDistance(0.8, 74, 180, false); // 24
+            driveTrain.driveDistance(0.8, 24, 270, false); // was 4
+            driveTrain.driveDistance(0.8, 44, 0, false); // 24
             driveTrain.rotateDegrees(0.8,-90);
             scoringMechanism.slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             scoringMechanism.slideByTicks(0.2, -4200); //4300
@@ -47,12 +47,12 @@ public class RedLeftVisionConePark extends LinearOpMode {
             driveTrain.driveDistance(0.2, 4, 270, false); // 13
             scoringMechanism.openGripper();
             driveTrain.driveDistance(0.8,4,90,false);
-            driveTrain.driveDistance(.8,15,180,false);
-            if (parkPos==17) {
+            driveTrain.driveDistance(.8,15,0,false);
+            if (parkPos==19) {
                 driveTrain.driveDistance(0.8,1,0,false);
             } else if (parkPos==18) {
                 driveTrain.driveDistance(0.8,24,90,false);
-            } else if (parkPos==19) {
+            } else if (parkPos==17) {
                 driveTrain.driveDistance(0.8,48,90,false);
             } else {
 

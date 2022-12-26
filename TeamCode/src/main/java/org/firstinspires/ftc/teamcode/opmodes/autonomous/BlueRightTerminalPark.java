@@ -47,7 +47,7 @@ public class BlueRightTerminalPark extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true);
+        robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true, telemetry);
         driveTrain = (DriveTrain) RobotMain.driveTrain;
         scoringMechanism = (ScoringMechanism) RobotMain.scoringMechanism;
         timer.reset();
