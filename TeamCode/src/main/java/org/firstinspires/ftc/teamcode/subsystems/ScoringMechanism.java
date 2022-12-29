@@ -27,6 +27,11 @@ public class ScoringMechanism extends Subsystem {
     public DistanceSensor distance;
     public DigitalChannel digitalTouch;  // Hardware Device Object
 
+    private final int LEVEL1_MM = 0; //TODO
+    private final int LEVEL2_MM = 0; //TODO
+    private final int LEVEL3_MM = 0; //TODO
+    private int goalHeight;
+
     //  public ColorSensor color;
    // public CRServo capping;
 
@@ -78,6 +83,7 @@ public class ScoringMechanism extends Subsystem {
 
 
         //telemetry.update();
+        // updateSliderSpeed(); //TODO uncomment
         int pos = slide.getCurrentPosition();
         if (RobotMain.gamepad2.dpad_up) {
             if (d > 750) {
@@ -119,6 +125,34 @@ public class ScoringMechanism extends Subsystem {
         }
     }
 
+    public void setGoalHeight(int level) {
+        switch (level) {
+            case 1: goalHeight = LEVEL1_MM;
+            case 2: goalHeight = LEVEL2_MM;
+            case 3: goalHeight = LEVEL3_MM;
+            default: goalHeight = 0;
+        }
+    }
+
+    /**
+     * Updates slider speed based off of dist from ground
+     * @param currentPos currentPosition of the thing
+     * @return whether or not motion is finished
+     */
+    public boolean updateSliderSpeed() {
+        if (goalHeight != 0) {
+            final double kP = 1; //TODO tune
+            final double tolerance = 5; //TODO tune # of millimeters
+            double error = (goalHeight - distance.getDistance());
+
+            if (Math.abs(error) > tolerance) {
+                slide.setPower(error * kP);
+                return false;
+            } 
+        }
+        return true;
+    }
+
     @Override
     public void stop() {
         slide.setPower(0);
@@ -138,6 +172,9 @@ public class ScoringMechanism extends Subsystem {
             //changed to slide.getpos instead of timer (not as accurate)
             //more likely to reach its position more consistently
         }
+
+        //TODO uncomment when ready
+        // while (!updateSliderSpeed()) {}
         slide.setPower(0);
     }
     public void closeGripper() {

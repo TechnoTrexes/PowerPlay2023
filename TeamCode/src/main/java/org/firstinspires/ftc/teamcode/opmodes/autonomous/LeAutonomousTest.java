@@ -23,6 +23,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotMain;
 import org.firstinspires.ftc.teamcode.subsystems.*;
@@ -67,7 +69,7 @@ public class LeAutonomousTest extends LinearOpMode {
 
 
         if (opModeIsActive()) {
-            scoringMechanism.slideByTicks(0.8,Constants.BOTTOM_TIER_TICKS);
+            // scoringMechanism.slideByTicks(0.8,Constants.BOTTOM_TIER_TICKS);
             // scoringMechanism.slideByTicks(0.8,Constants.MIDDLE_TIER_TICKS);
            // scoringMechanism.slideByTicks(0.8, Constants.TOP_TIER_TICKS);scoringMechanism.slideByTicks(0.8,Constants.BOTTOM_TIER_TICKS);
 
