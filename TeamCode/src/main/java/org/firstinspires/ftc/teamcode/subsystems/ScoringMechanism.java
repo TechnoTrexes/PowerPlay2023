@@ -27,6 +27,7 @@ public class ScoringMechanism extends Subsystem {
     public DistanceSensor distance;
     public DigitalChannel digitalTouch;  // Hardware Device Object
 
+    private boolean lockedOnTarget = false;
     private final int LEVEL1_MM = 500; //TODO
     private final int LEVEL2_MM = 735; //TODO
     private final int LEVEL3_MM = 980; //TODO
@@ -70,14 +71,20 @@ public class ScoringMechanism extends Subsystem {
 
     @Override
     public void loop(Telemetry telemetry) {
-        double d= 0;
-        d= distance.getDistance(DistanceUnit.MM);
+        double d = distance.getDistance(DistanceUnit.MM);
         telemetry.addData("distance= ", d);
         telemetry.update();
 
+        //If not locked onto a target, prevent slide from going down on its own weight
+        if (!lockedOnTarget && !RobotMain.gamepad2.dpad_down && !RobotMain.gamepad2.dpad_up) {
+            stayAtCurrentHeight();
+        }
+
+        //Auto go to level (or set power to 0 if slideToLevel() motion is done)
         if (slideToLevel()) {
             slide.setPower(0);
         }
+
         int pos = slide.getCurrentPosition();
         if (RobotMain.gamepad2.y) {
             setGoalHeight(1);
@@ -88,14 +95,14 @@ public class ScoringMechanism extends Subsystem {
         } else if (RobotMain.gamepad2.dpad_right) {
             setGoalHeight(3);
         } else if (RobotMain.gamepad2.dpad_up) {
-            setGoalHeight(0);
+            setGoalHeight(0); //Stop auto locking onto a position
             if (d > 750) {
                 slide.setPower(-0.25);
             } else {
                 slide.setPower(-0.5);
             }
         } else if (RobotMain.gamepad2.dpad_down) {
-            setGoalHeight(0);
+            setGoalHeight(0); //Stop auto locking onto a position
             if (digitalTouch.getState() == true) {
                 slide.setPower(0.5);
             } else {
@@ -103,36 +110,47 @@ public class ScoringMechanism extends Subsystem {
             }
 
         } else if (RobotMain.gamepad2.b) { //close
-         //   basket.setPosition(1);
-           // capping.setPosition(0);
             closeGripper();
         } else if (RobotMain.gamepad2.x) { //open
-            //  basket.setPosition(0.4);
-            // capping.setPosition(0.15);
             openGripper();
-
             //  telemetry.addData("slide motor position:", pos);
             // telemetry.update();
         }
-    //   intake.setPower(0);
-//            duckArm.setPower(0);
-           // basket.setPosition(1);
-            //capping.setPosition(0);
-
-            //  capping.setPower(0);
     }
 
     public void setGoalHeight(int level) {
         switch (level) {
-            case 1: goalHeight = LEVEL1_MM;
+            case 1: 
+                goalHeight = LEVEL1_MM;
+                lockedOnTarget = true;
                 break;
-            case 2: goalHeight = LEVEL2_MM;
+            case 2: 
+                goalHeight = LEVEL2_MM;
+                lockedOnTarget = true;
                 break;
-            case 3: goalHeight = LEVEL3_MM;
+            case 3: 
+                goalHeight = LEVEL3_MM;
+                lockedOnTarget = true;
                 break;
-            default: goalHeight = 0;
+            default: 
+                goalHeight = distance.getDistance();
+                lockedOnTarget = false;
                 break;
         }
+    }
+
+    /**
+     * Updates slider speed based off of dist from ground but ONLY when 
+     * the slider isn't moving (i.e. when the drivers aren't pressing up or down)
+     */
+    public void stayAtCurrentHeight() {
+        //Very janky hack so that we don't have to copy paste the slideToLevel() code:
+        //set lockedOnTarget to true ONLY for this iteration, then we set it back to false
+        //since we're guaranteed that lockedOnTarget will be false once entering this method
+        //and we want it to be in the same state leaving it
+        lockedOnTarget = true;
+        slideToLevel();
+        lockedOnTarget = false;
     }
 
     /**
@@ -140,8 +158,8 @@ public class ScoringMechanism extends Subsystem {
      * @return whether or not motion is finished
      */
     public boolean slideToLevel() {
-        if (goalHeight != 0) {
-            final double kP = -0.004; //TODO tune
+        if (lockedOnTarget) {
+            final double kP = -0.005; //TODO tune
             final double tolerance = 10; //TODO tune # of millimeters
             double error = (goalHeight - distance.getDistance(DistanceUnit.MM));
 
