@@ -27,13 +27,17 @@ public class ScoringMechanism extends Subsystem {
     public DistanceSensor distance;
     public DigitalChannel digitalTouch;  // Hardware Device Object
 
-    final double tolerance = 6; //TODO tune # of millimeters
-
-    private boolean lockedOnTarget = false;
-    private final int LEVEL1_MM = 500; //TODO
-    private final int LEVEL2_MM = 735; //TODO
-    private final int LEVEL3_MM = 980; //TODO
+    
+    private final double tolerance = 6; //TODO tune # of millimeters
+    private final int LEVEL1_MM = 500; //TODO tune
+    private final int LEVEL2_MM = 735; //TODO tune
+    private final int LEVEL3_MM = 980; //TODO tune 
+    private final int JUMP_TOLERANCE = 0; //TODO tune
+    private boolean lockedOnTarget = false; //Whether or not we're in auto slide mode or manual slide mode
+    private boolean objectUnderSensor = false; //Whether or not there's an object under the distance sensor
+    private double prevDistance = 0; //To keep track of the distance of the previous iteration to measure jump
     private double goalHeight;
+    private double currJump;
 
     //  public ColorSensor color;
 
@@ -72,10 +76,28 @@ public class ScoringMechanism extends Subsystem {
 
     @Override
     public void loop(Telemetry telemetry) {
-        double d = distance.getDistance(DistanceUnit.MM);
-        telemetry.addData("lockedOntoTarget", lockedOnTarget);
-        telemetry.update();
+        //IMPORTANT: preventing the slide from jumping if there's an object suddenly under the distance sensor
+        double currDistance = distance.getDistance(DistanceUnit.MM);
+        currJump = currDistance - prevDistance;
 
+        //Check if there's a jump in distance
+        if (Math.abs(currJump) > JUMP_TOLERANCE && prevDistance != 0) {
+            objectUnderSensor = !objectUnderSensor; //Either an object was placed or removed
+        }
+
+        //If there's no object under the sensor, set currJump to 0
+        if (!objectUnderSensor) {
+            currJump = 0;
+        }
+        
+        //Control gripper
+        if (RobotMain.gamepad2.b) { //close
+            closeGripper();
+        } else if (RobotMain.gamepad2.x) { //open
+            openGripper();
+        }
+        
+        
         //If not locked onto a target, prevent slide from going down on its own weight
         if (!lockedOnTarget && Math.abs(RobotMain.gamepad2.left_stick_y) < 0.1) {
             stayAtCurrentHeight();
@@ -86,17 +108,17 @@ public class ScoringMechanism extends Subsystem {
             slide.setPower(0);
         }
         telemetry.addData("goal height", goalHeight);
-
-        int pos = slide.getCurrentPosition();
+        
+        //Slide controls
         if (RobotMain.gamepad2.dpad_down) {
             setGoalHeight(1, false); //false doesn't matter here
-        } else if (RobotMain.gamepad2.dpad_right) {
+        } else if (RobotMain.gamepad2.dpad_left || RobotMain.gamepad2.dpad_right) { //Either left or right
             setGoalHeight(2, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.dpad_up) {
             setGoalHeight(3, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.left_stick_y < -0.1) {
             setGoalHeight(0, false); //Stop auto locking onto a position
-            if (d > 750) {
+            if (currDistance > 750) {
                 slide.setPower(-0.25);
             } else {
                 slide.setPower(-0.5);
@@ -108,16 +130,14 @@ public class ScoringMechanism extends Subsystem {
             } else {
                 slide.setPower(0);
             }
-
-        } else if (RobotMain.gamepad2.b) { //close
-            closeGripper();
-        } else if (RobotMain.gamepad2.x) { //open
-            openGripper();
-            //  telemetry.addData("slide motor position:", pos);
-            // telemetry.update();
+            
         }
-    }
 
+        //Update prev distance as the very last thing
+        prevDistance = currDistance;
+        telemetry.update();
+    }
+    
     /**
      * Sets the goal height either to a level (1, 2, or 3), or to the current position for manual control
      * @param level 1, 2, or 3, or 0 for manual control
@@ -151,6 +171,7 @@ public class ScoringMechanism extends Subsystem {
                 lockedOnTarget = false;
                 break;
         }
+        goalHeight -= currJump; //Offset by currJump (which is set to 0 if negligible)
     }
 
     /**
