@@ -27,14 +27,15 @@ public class ScoringMechanism extends Subsystem {
     public DistanceSensor distance;
     public DigitalChannel digitalTouch;  // Hardware Device Object
 
+    final double tolerance = 6; //TODO tune # of millimeters
+
     private boolean lockedOnTarget = false;
     private final int LEVEL1_MM = 500; //TODO
     private final int LEVEL2_MM = 735; //TODO
     private final int LEVEL3_MM = 980; //TODO
-    private int goalHeight;
+    private double goalHeight;
 
     //  public ColorSensor color;
-   // public CRServo capping;
 
     private final double intakePower = 1;
     private final double slidePower = -0.8; //-1
@@ -66,43 +67,49 @@ public class ScoringMechanism extends Subsystem {
         basket.setPosition(0.35);
         capping.setPosition(0.65);
         timer.reset();
-
+        goalHeight = distance.getDistance(DistanceUnit.MM);
     }
 
     @Override
     public void loop(Telemetry telemetry) {
         double d = distance.getDistance(DistanceUnit.MM);
-        telemetry.addData("distance= ", d);
+        telemetry.addData("lockedOntoTarget", lockedOnTarget);
         telemetry.update();
 
         //If not locked onto a target, prevent slide from going down on its own weight
-        if (!lockedOnTarget && !RobotMain.gamepad2.dpad_down && !RobotMain.gamepad2.dpad_up) {
+        if (!lockedOnTarget && Math.abs(RobotMain.gamepad2.left_stick_y) < 0.1) {
             stayAtCurrentHeight();
         }
 
         //Auto go to level (or set power to 0 if slideToLevel() motion is done)
-        if (slideToLevel()) {
+        if (slideToLevel() && lockedOnTarget) {
             slide.setPower(0);
         }
+        telemetry.addData("goal height", goalHeight);
 
         int pos = slide.getCurrentPosition();
-        if (RobotMain.gamepad2.y) {
-            setGoalHeight(1);
-            //telemetry.addData("goalheight= ", goalHeight);
-            //telemetry.update();
-        } else if (RobotMain.gamepad2.a) {
-            setGoalHeight(2);
+        if (RobotMain.gamepad2.dpad_down) {
+            setGoalHeight(1, false);
         } else if (RobotMain.gamepad2.dpad_right) {
-            setGoalHeight(3);
+            setGoalHeight(2, false);
         } else if (RobotMain.gamepad2.dpad_up) {
-            setGoalHeight(0); //Stop auto locking onto a position
+            setGoalHeight(3, false);
+        } else if (RobotMain.gamepad2.left_stick_y < -0.1) {
+            setGoalHeight(0, true); //Stop auto locking onto a position
             if (d > 750) {
                 slide.setPower(-0.25);
             } else {
                 slide.setPower(-0.5);
             }
-        } else if (RobotMain.gamepad2.dpad_down) {
-            setGoalHeight(0); //Stop auto locking onto a position
+        } else if (RobotMain.gamepad2.left_bumper) {
+            setGoalHeight(0, true); //Stop auto locking onto a position
+            if (d > 750) {
+                slide.setPower(-0.25);
+            } else {
+                slide.setPower(-0.5);
+            }
+        } else if (RobotMain.gamepad2.left_stick_y > 0.1) {
+            setGoalHeight(0, false); //Stop auto locking onto a position
             if (digitalTouch.getState() == true) {
                 slide.setPower(0.5);
             } else {
@@ -118,7 +125,13 @@ public class ScoringMechanism extends Subsystem {
         }
     }
 
-    public void setGoalHeight(int level) {
+    /**
+     * Sets the goal height either to a level (1, 2, or 3), or to the current position for manual control
+     * @param level 1, 2, or 3, or 0 for manual control
+     * @param direction doesn't matter in most cases, but true if it's going up, false if slide is currently
+     *                  going down
+     */
+    public void setGoalHeight(int level, boolean direction) {
         switch (level) {
             case 1: 
                 goalHeight = LEVEL1_MM;
@@ -132,8 +145,16 @@ public class ScoringMechanism extends Subsystem {
                 goalHeight = LEVEL3_MM;
                 lockedOnTarget = true;
                 break;
-            default: 
-                goalHeight = distance.getDistance();
+            default:
+                //(direction ? - 1 : 1) just expands to:
+                //if (direction == true) {
+                //  return -1;
+                // } else {
+                //  return 1;
+                //}
+
+                //That will multiply tolerance by -1 if direction is true, or 1 if it's false
+                goalHeight = distance.getDistance(DistanceUnit.MM) + tolerance * (direction ? - 1 : 1);
                 lockedOnTarget = false;
                 break;
         }
@@ -158,16 +179,20 @@ public class ScoringMechanism extends Subsystem {
      * @return whether or not motion is finished
      */
     public boolean slideToLevel() {
+        final double kP = -0.005; //TODO tune
+
+        double dd = distance.getDistance(DistanceUnit.MM);
+        if (dd < 75.0) {
+            // do nothing
+            return true;
+        }
         if (lockedOnTarget) {
-            final double kP = -0.005; //TODO tune
-            final double tolerance = 10; //TODO tune # of millimeters
-            double error = (goalHeight - distance.getDistance(DistanceUnit.MM));
+            double error = (goalHeight - dd);
 
             if (Math.abs(error) > tolerance) {
                 slide.setPower(error * kP);
                 return false;
-            }
-            else {
+            } else {
                 slide.setPower(0);
             }
         }
@@ -177,8 +202,6 @@ public class ScoringMechanism extends Subsystem {
     @Override
     public void stop() {
         slide.setPower(0);
-      //  intake.setPower(0);
-      //  duckArm.setPower(0);
     }
 
     public void slideByTicks(double power, double ticks) {
@@ -206,29 +229,6 @@ public class ScoringMechanism extends Subsystem {
         basket.setPosition(0.35);
         capping.setPosition(0.65);
     }
-
-    public void cappingMotion(double power) {
-//     capping.setPower(power);
-    }
-
-    public void basketMotion() {
-        basket.setPosition(0.85);
-
-        timer.reset();
-        while (timer.milliseconds() < 1800) {
-            // do nothing
-        }
-
-        basket.setPosition(0);
-    }
-
-    public void intake(double power) {
-        intake.setPower(power);
-    }
-
-    public void slide(double power) { slide.setPower(power); }
-
-    public void duckArm(double power) { duckArm.setPower(power); }
 
     /**
      * @return the singleton instance of the subsystem
