@@ -89,28 +89,21 @@ public class ScoringMechanism extends Subsystem {
 
         int pos = slide.getCurrentPosition();
         if (RobotMain.gamepad2.dpad_down) {
-            setGoalHeight(1, false);
+            setGoalHeight(1, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.dpad_right) {
-            setGoalHeight(2, false);
+            setGoalHeight(2, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.dpad_up) {
-            setGoalHeight(3, false);
+            setGoalHeight(3, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.left_stick_y < -0.1) {
-            setGoalHeight(0, true); //Stop auto locking onto a position
-            if (d > 750) {
-                slide.setPower(-0.25);
-            } else {
-                slide.setPower(-0.5);
-            }
-        } else if (RobotMain.gamepad2.left_bumper) {
-            setGoalHeight(0, true); //Stop auto locking onto a position
+            setGoalHeight(0, false); //Stop auto locking onto a position
             if (d > 750) {
                 slide.setPower(-0.25);
             } else {
                 slide.setPower(-0.5);
             }
         } else if (RobotMain.gamepad2.left_stick_y > 0.1) {
-            setGoalHeight(0, false); //Stop auto locking onto a position
-            if (digitalTouch.getState() == true) {
+            setGoalHeight(0, true); //Stop auto locking onto a position
+            if (digitalTouch.getState()) {
                 slide.setPower(0.5);
             } else {
                 slide.setPower(0);
