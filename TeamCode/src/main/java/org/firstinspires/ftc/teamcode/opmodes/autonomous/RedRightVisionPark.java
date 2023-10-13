@@ -38,6 +38,7 @@ public class RedRightVisionPark extends LinearOpMode {
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
             scoringMechanism.closeGripper();
+            scoringMechanism.slideByTicks(0.2, -100);
             driveTrain.driveDistance(0.8, 24, 90, false); // was 4
             driveTrain.driveDistance(0.8, 59, 0, false); // 24
             driveTrain.rotateDegrees(0.8,-45);

@@ -103,9 +103,9 @@ public class TeleopSide extends OpMode {
         telemetry.update();
         int pos = scoringMechanism.slide.getCurrentPosition();
         if (gamepad2.dpad_up) {
-            scoringMechanism.slide.setPower(-0.05);
+            scoringMechanism.slide.setPower(1);
         } else if (gamepad2.dpad_down) {
-            scoringMechanism.slide.setPower(0.05);
+            scoringMechanism.slide.setPower(-1);
         } else if (gamepad2.b) { //close
             scoringMechanism.basket.setPosition(1);
             scoringMechanism.capping.setPosition(0);

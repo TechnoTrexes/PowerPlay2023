@@ -59,7 +59,9 @@ public class BlueLeftTerminalPark extends LinearOpMode {
 
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
-            driveTrain.driveDistance(0.5, 35, 270, false);
+            scoringMechanism.closeGripper();
+            scoringMechanism.slideByTicks(0.2, -100);
+            driveTrain.driveDistance(0.5, 100, 270, false);
         }
     }
 }

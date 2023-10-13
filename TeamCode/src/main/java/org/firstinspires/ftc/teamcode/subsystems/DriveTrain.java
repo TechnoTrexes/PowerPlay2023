@@ -29,7 +29,7 @@ public class DriveTrain extends Subsystem {
     public DcMotor horizontalEncoder;
 
     //Declare constants
-    private static final double VIDIPT_DRIVE_CONTROL = 0.5; //1 is og
+    private static final double VIDIPT_DRIVE_CONTROL = 0.45; //1 is og
     //private double VIDIPT_DRIVE_CONTROL = 1;
     private static final double WHEEL_CIRCUMFERENCE = 4 * Math.PI;
     private static final int TICKS_PER_ROTATION = 538;

@@ -22,7 +22,7 @@ public class BlueLeftVisionConePark extends LinearOpMode {
     private int parkPos;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         robot = new RobotMain(hardwareMap, gamepad1, gamepad2, "blue", true, telemetry);
         driveTrain = (DriveTrain) RobotMain.driveTrain;
         scoringMechanism = (ScoringMechanism) RobotMain.scoringMechanism;
@@ -38,13 +38,16 @@ public class BlueLeftVisionConePark extends LinearOpMode {
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
             scoringMechanism.closeGripper();
-            driveTrain.driveDistance(0.8, 26, 270, false); // was 4
-            driveTrain.driveDistance(0.8, 47, 0, false); // 24
-            //driveTrain.rotateDegrees(0.8,90);
+            scoringMechanism.slideByTicks(0.2, -100);
+            driveTrain.driveDistance(0.8, 29, 270, false); // was 4
             scoringMechanism.slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            scoringMechanism.slideByTicks(0.2, -4200); //4300
-            scoringMechanism.slide.setPower(0);
-            driveTrain.driveDistance(0.2, 4, 270, false); // 13
+            scoringMechanism.slideByTicks(0.3, -4200); //4300
+            scoringMechanism.slide.setPower(0.1);
+            driveTrain.driveDistance(0.8, 48, 0, false); // 24
+            //driveTrain.rotateDegrees(0.8,90);
+            driveTrain.driveDistance(0.2, 2, 270, false); // 13
+            Thread.sleep(2000);
+            scoringMechanism.slideByTicks(0.3,650);
             scoringMechanism.openGripper();
             driveTrain.driveDistance(0.8,4,90,false);
             driveTrain.driveDistance(.8,15,0,false);

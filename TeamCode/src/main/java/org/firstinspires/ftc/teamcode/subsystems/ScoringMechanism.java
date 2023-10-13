@@ -30,9 +30,9 @@ public class ScoringMechanism extends Subsystem {
     final double tolerance = 6; //TODO tune # of millimeters
 
     private boolean lockedOnTarget = false;
-    private final int LEVEL1_MM = 500; //TODO
-    private final int LEVEL2_MM = 735; //TODO
-    private final int LEVEL3_MM = 980; //TODO
+    private final int LEVEL1_MM = 450; //TODO
+    private final int LEVEL2_MM = 700; //TODO
+    private final int LEVEL3_MM = 900; //TODO //980
     private double goalHeight;
 
     //  public ColorSensor color;
@@ -76,9 +76,19 @@ public class ScoringMechanism extends Subsystem {
         telemetry.addData("lockedOntoTarget", lockedOnTarget);
         telemetry.update();
 
+        if (RobotMain.gamepad2.left_stick_y > 0.1) {
+            slide.setPower(0.1);
+        }
+        if (RobotMain.gamepad2.left_stick_y < -0.1) {
+            slide.setPower(-0.1);
+        }
+        else {
+            slide.setPower(0);
+        }
+
         //If not locked onto a target, prevent slide from going down on its own weight
-        if (!lockedOnTarget && Math.abs(RobotMain.gamepad2.left_stick_y) < 0.1) {
-            stayAtCurrentHeight();
+       if (!lockedOnTarget && Math.abs(RobotMain.gamepad2.left_stick_y) < 0.1) {
+            stayAtCurrentHeight(); // if joystick is moved at all refer to locked on target method
         }
 
         //Auto go to level (or set power to 0 if slideToLevel() motion is done)
@@ -96,15 +106,17 @@ public class ScoringMechanism extends Subsystem {
             setGoalHeight(3, false); //false doesn't matter here
         } else if (RobotMain.gamepad2.left_stick_y < -0.1) {
             setGoalHeight(0, false); //Stop auto locking onto a position
+
+
             if (d > 750) {
                 slide.setPower(-0.25);
             } else {
-                slide.setPower(-0.5);
+                slide.setPower(-0.5); //-1
             }
         } else if (RobotMain.gamepad2.left_stick_y > 0.1) {
             setGoalHeight(0, true); //Stop auto locking onto a position
             if (digitalTouch.getState()) {
-                slide.setPower(0.5);
+                slide.setPower(0.5); //1
             } else {
                 slide.setPower(0);
             }
@@ -114,12 +126,11 @@ public class ScoringMechanism extends Subsystem {
         } else if (RobotMain.gamepad2.x) { //open
             openGripper();
             //  telemetry.addData("slide motor position:", pos);
-            // telemetry.update();
+            // telemetry.update(); */
         }
     }
-
-    /**
-     * Sets the goal height either to a level (1, 2, or 3), or to the current position for manual control
+/*
+      * Sets the goal height either to a level (1, 2, or 3), or to the current position for manual control
      * @param level 1, 2, or 3, or 0 for manual control
      * @param direction doesn't matter in most cases, but true if it's going up, false if slide is currently
      *                  going down
@@ -157,7 +168,7 @@ public class ScoringMechanism extends Subsystem {
      * Updates slider speed based off of dist from ground but ONLY when 
      * the slider isn't moving (i.e. when the drivers aren't pressing up or down)
      */
-    public void stayAtCurrentHeight() {
+   public void stayAtCurrentHeight() {
         //Very janky hack so that we don't have to copy paste the slideToLevel() code:
         //set lockedOnTarget to true ONLY for this iteration, then we set it back to false
         //since we're guaranteed that lockedOnTarget will be false once entering this method
@@ -190,6 +201,7 @@ public class ScoringMechanism extends Subsystem {
             }
         }
         return true;
+
     }
 
     @Override
@@ -214,13 +226,25 @@ public class ScoringMechanism extends Subsystem {
         // while (!updateSliderSpeed()) {}
         slide.setPower(0);
     }
+
     public void closeGripper() {
         basket.setPosition(1); //1
         capping.setPosition (0); //0
     }
     public void openGripper() {
-        basket.setPosition(0.35);
-        capping.setPosition(0.65);
+        basket.setPosition(0); //.35
+        capping.setPosition(0.3); //.65
+    }
+
+    // this may suffice as a slide to level for autonomous...? but how to make sure no sliding down
+    // only thought in my mind is to call this again right before dropping
+    public void slideToLevel(double power, int level) {
+        this.setGoalHeight(level, false);
+        slide.setPower(power);
+        while (!slideToLevel()) {
+            // yeah??
+        }
+        slide.setPower(0);
     }
 
     /**

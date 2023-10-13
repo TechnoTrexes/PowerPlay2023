@@ -37,15 +37,17 @@ public class BlueLeftVisionPark extends LinearOpMode {
 
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
-            driveTrain.driveDistance(0.8, 24, 90, false);
-            driveTrain.driveDistance(0.8, 59, 180, false);
+            scoringMechanism.closeGripper();
+            scoringMechanism.slideByTicks(0.2, -100);
+            driveTrain.driveDistance(0.8, 26, 270, false);
+            driveTrain.driveDistance(0.8, 62, 0, false);
 
             if (parkPos==17) {
                 driveTrain.driveDistance(0.8,1,0,false);
             } else if (parkPos==18) {
-                driveTrain.driveDistance(0.8,24,270,false);
+                driveTrain.driveDistance(0.8,24,90,false);
             } else if (parkPos==19) {
-                driveTrain.driveDistance(0.8,48,270,false);
+                driveTrain.driveDistance(0.8,48,90,false);
             } else {
 
             }

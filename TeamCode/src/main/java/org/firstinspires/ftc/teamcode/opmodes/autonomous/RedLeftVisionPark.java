@@ -38,9 +38,10 @@ public class RedLeftVisionPark extends LinearOpMode {
         // code to run sequentially for 30 seconds
         if (opModeIsActive()) {
             scoringMechanism.closeGripper();
+            scoringMechanism.slideByTicks(0.2, -100);
             driveTrain.driveDistance(0.8, 24, 270, false); // was 4
             driveTrain.driveDistance(0.8, 59, 0, false); // 24
-            driveTrain.rotateDegrees(0.8,45);
+           // driveTrain.rotateDegrees(0.8,45);
             if (parkPos==19) {
                 driveTrain.driveDistance(0.8,1,0,false);
             } else if (parkPos==18) {
